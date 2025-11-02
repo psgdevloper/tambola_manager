@@ -99,6 +99,8 @@
                     <button id="start-auto-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg text-lg sm:text-xl transition duration-200 shadow-lg">
                         Start Game
                     </button>
+                    <!-- New: Message area for the start button -->
+                    <div id="start-message-area" class="text-red-400 text-center text-sm"></div>
                 </div>
 
                 <!-- Auto Draw Section (hidden by default) (Order 2) -->
@@ -158,6 +160,10 @@
         </div> <!-- End Main content grid -->
     </div> <!-- End max-w-7xl -->
 
+    <footer class="text-center text-slate-500 text-base mt-8 pb-6">
+        Created by Pranab Sengupta
+    </footer>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- State Variables ---
@@ -165,6 +171,7 @@
             let availableNumbers = [];
             let calledNumbers = new Set();
             let currentNumber = null;
+            let prizePoolCalculated = false; // New state variable
             const prizes = [
                 { name: 'Full House', percent: 0.55, isLine: false },
                 { name: 'First Line', percent: 0.15, isLine: true },
@@ -177,6 +184,7 @@
             const tambolaBoard = document.getElementById('tambola-board');
             const startButtonsContainer = document.getElementById('start-buttons-container');
             const startAutoButton = document.getElementById('start-auto-button');
+            const startMessageArea = document.getElementById('start-message-area'); // New DOM element
             const autoDrawSection = document.getElementById('auto-draw-section');
             const drawNumberButton = document.getElementById('draw-number-button');
             const autoMessageArea = document.getElementById('auto-message-area');
@@ -218,6 +226,9 @@
                     const li = createPrizeListItem(prize, prizeAmount);
                     prizeList.appendChild(li);
                 }
+                
+                prizePoolCalculated = true; // Set state to true
+                startMessageArea.textContent = ''; // Clear any error
             }
 
             /**
@@ -300,6 +311,7 @@
                 availableNumbers = Array.from({ length: 90 }, (_, i) => i + 1);
                 calledNumbers.clear();
                 currentNumber = null;
+                prizePoolCalculated = false; // Reset state
                 
                 currentNumberDisplay.textContent = '--';
                 currentNumberDisplay.classList.add('text-slate-500');
@@ -325,6 +337,7 @@
                 startButtonsContainer.classList.remove('hidden');
 
                 autoMessageArea.textContent = '';
+                startMessageArea.textContent = ''; // Clear start error
                 drawNumberButton.disabled = false;
             }
 
@@ -332,6 +345,12 @@
              * Handles the click on the "Start Game" button.
              */
             function handleStartGame() {
+                // New check: Don't start if prize pool isn't calculated
+                if (!prizePoolCalculated) {
+                    startMessageArea.textContent = 'Please calculate the prize pool first!';
+                    return;
+                }
+                
                 if (gameInProgress) return;
                 gameInProgress = true;
 
@@ -412,5 +431,8 @@
     </script>
 </body>
 </html>
+
+
+
 
 
